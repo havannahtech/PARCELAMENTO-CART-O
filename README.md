@@ -1,2 +1,2 @@
-# PARCELAMENTO-CART-O
+# PARCELAMENTO-CARTAO
 Simulador de Parcelamento Sagaz Motors
