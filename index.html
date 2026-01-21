@@ -1,0 +1,128 @@
+<PARCELAMENTO SAGAZ MOTORS>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sagaz Motors | Simulador Profissional</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#000,#1a1a1a);color:#f1f1f1;padding:20px}
+    .container{max-width:1200px;margin:auto;background:#0b0b0b;padding:30px;border-radius:18px;box-shadow:0 0 30px rgba(255,0,0,.35)}
+    .header{text-align:center;margin-bottom:20px}
+    .header img{max-width:220px}
+    h1{color:#e11d48;margin-top:10px}
+    .inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px}
+    label{font-size:13px;color:#cbd5e1}
+    input{width:100%;padding:14px;border-radius:10px;border:none;font-size:18px;margin-top:6px}
+    button{background:#e11d48;color:#fff;border:none;padding:14px;border-radius:12px;font-size:15px;cursor:pointer}
+    button:hover{background:#be123c}
+    table{width:100%;border-collapse:collapse;margin-top:30px}
+    th,td{padding:14px;text-align:center;border-bottom:1px solid #27272a;font-size:16px}
+    th{background:#111827;color:#e11d48}
+    .hidden{display:none}
+    .actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <img src="logo.png" alt="Sagaz Motors" />
+    <h1>Simulador de Parcelamento</h1>
+  </div>
+
+  <div class="inputs">
+    <div>
+      <label>Valor do Produto (R$)</label>
+      <input type="number" id="valor" value="10000" />
+    </div>
+    <div id="freteBox" class="hidden">
+      <label>Frete (interno)</label>
+      <input type="number" id="frete" value="500" />
+    </div>
+    <div id="taxaBox" class="hidden">
+      <label>Taxa de Juros Mensal (%)</label>
+      <input type="number" id="taxa" value="1.8" step="0.01" />
+    </div>
+    <div>
+      <label>WhatsApp do Cliente</label>
+      <input type="tel" id="whats" value="55" placeholder="55DDDNÚMERO" />
+    </div>
+  </div>
+
+  <button onclick="liberarVendedor()" style="position:fixed;bottom:10px;right:10px;background:#111;color:#222;font-size:12px;padding:8px 10px;border-radius:8px">área</button>
+
+  <div class="actions hidden" id="modoBox">
+    <button onclick="modo='loja';calcular()">🏪 Sem juros (loja)</button>
+    <button onclick="modo='cliente';calcular()">👤 Com juros (cliente)</button>
+    <button style="margin-left:auto" onclick="window.print()">📄 Gerar PDF</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Parcelas</th>
+        <th>Valor da Parcela</th>
+        <th class="hidden" id="colLiquido">Recebido pela loja</th>
+      </tr>
+    </thead>
+    <tbody id="tabela"></tbody>
+  </table>
+</div>
+
+<script>
+let modo = 'loja';
+let cache = {};
+
+const valorInput = document.getElementById('valor');
+const freteInput = document.getElementById('frete');
+const taxaInput = document.getElementById('taxa');
+const tabela = document.getElementById('tabela');
+
+function calcular() {
+  const valor = Number(valorInput.value) || 0;
+  const frete = freteInput ? Number(freteInput.value) || 0 : 0;
+  const taxa = taxaInput ? (Number(taxaInput.value) || 0) / 100 : 0;
+
+  tabela.innerHTML = '';
+  cache = {};
+
+  for (let p = 12; p <= 24; p++) {
+    const total = valor + frete;
+    let parcela;
+    let recebido;
+
+    if (modo === 'cliente') {
+      const montante = valor * Math.pow(1 + taxa, p);
+      parcela = (montante + frete) / p;
+      recebido = total;
+    } else {
+      parcela = total / p;
+      recebido = taxa > 0 ? parcela * (1 - Math.pow(1 + taxa, -p)) / taxa : total;
+    }
+
+    cache[p] = { parcela, recebido };
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${p}x</td>
+      <td>${parcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+      <td class="hidden liquido">${recebido.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+    `;
+    tabela.appendChild(tr);
+  }
+}
+
+function liberarVendedor() {
+  if (prompt('Senha do vendedor:') === 'sagaz123') {
+    document.getElementById('freteBox').classList.remove('hidden');
+    document.getElementById('taxaBox').classList.remove('hidden');
+    document.getElementById('modoBox').classList.remove('hidden');
+    document.getElementById('colLiquido').classList.remove('hidden');
+    document.querySelectorAll('.liquido').forEach(e => e.classList.remove('hidden'));
+  }
+}
+
+[valorInput, freteInput, taxaInput].forEach(el => el && el.addEventListener('input', calcular));
+calcular();
+</script>
+</body>
+</html>
