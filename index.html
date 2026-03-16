@@ -1,6 +1,7 @@
 ```html
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,6 +41,7 @@ box-shadow:0 0 30px rgba(255,0,0,.35)
 }
 
 .header{text-align:center;margin-bottom:20px}
+
 .header img{max-width:220px}
 
 h1{color:#e11d48;margin-top:10px}
@@ -114,12 +116,12 @@ flex-wrap:wrap
 
 <div>
 <label>Nome do Cliente</label>
-<input type="text" id="cliente" placeholder="Nome do cliente">
+<input type="text" id="cliente">
 </div>
 
 <div>
 <label>WhatsApp do Cliente</label>
-<input type="tel" id="whats" placeholder="DDD + número">
+<input type="tel" id="whats">
 </div>
 
 <div>
@@ -128,21 +130,21 @@ flex-wrap:wrap
 </div>
 
 <div id="freteBox" class="hidden">
-<label>Frete (interno)</label>
-<input type="number" id="frete" value="500">
+<label>Frete</label>
+<input type="number" id="frete" value="0">
 </div>
 
 </div>
 
-<button onclick="liberarVendedor()" style="position:fixed;bottom:10px;right:10px;background:#111;color:#222;font-size:12px;padding:8px 10px;border-radius:8px">
+<button onclick="liberarVendedor()" style="position:fixed;bottom:10px;right:10px;background:#111;color:#222;font-size:12px;padding:8px;border-radius:8px">
 área
 </button>
 
 <div class="actions hidden" id="modoBox">
 
-<button onclick="modo='loja';calcular()">🏪 Sem juros (loja)</button>
+<button onclick="modo='loja';calcular()">🏪 Sem juros</button>
 
-<button onclick="modo='cliente';calcular()">👤 Com juros (cliente)</button>
+<button onclick="modo='cliente';calcular()">👤 Com juros</button>
 
 <button onclick="enviarWhatsApp()">📲 Enviar no WhatsApp</button>
 
@@ -202,7 +204,7 @@ let recebido=0
 
 if(modo==='cliente'){
 
-const jurosTotal=0.04+(0.01*p)
+const jurosTotal=0.04+(0.01*(p-1))
 
 const totalComJuros=valor*(1+jurosTotal)
 
@@ -259,28 +261,25 @@ function enviarWhatsApp(){
 const nome=clienteInput.value||'Cliente'
 let numero=whatsInput.value.replace(/\D/g,'')
 
-if(!numero)return alert('Informe o WhatsApp do cliente')
+if(!numero)return alert('Informe o WhatsApp')
 
 if(!numero.startsWith('55'))numero='55'+numero
 
-let mensagem=`Olá, ${nome}! 😊
-É um prazer atender você na Sagaz Motors.
+let mensagem=`Olá ${nome}! 😊
 
-Segue simulação:
+Segue simulação Sagaz Motors:
 
 `
 
 Object.keys(cache).forEach(p=>{
-
 mensagem+=`${p}x de ${cache[p].parcela.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}\n`
-
 })
 
 mensagem+=`\nQualquer dúvida estou à disposição ⚡🏍️`
 
 const url=`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`
 
-window.open(url,'_blank')
+window.open(url)
 
 }
 
