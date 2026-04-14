@@ -1,308 +1,270 @@
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sagaz Motors | Simulador Profissional</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sagaz Motors | Simulador Profissional</title>
 
-<style>
+    <style>
+        @media print {
+            body { background: #fff; color: #000 }
+            .container { box-shadow: none }
+            button, .inputs, .actions { display: none }
+            .print-footer { display: block }
+        }
 
-@media print{
-body{background:#fff;color:#000}
-.container{box-shadow:none}
-button,.inputs,.actions{display:none}
-.print-footer{display:block}
-}
+        .print-footer {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #111
+        }
 
-.print-footer{
-display:none;
-text-align:center;
-margin-top:20px;
-font-size:14px;
-color:#111
-}
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #000, #1a1a1a);
+            color: #f1f1f1;
+            padding: 20px
+        }
 
-body{
-font-family:Arial,sans-serif;
-background:linear-gradient(135deg,#000,#1a1a1a);
-color:#f1f1f1;
-padding:20px
-}
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: #0b0b0b;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 0 30px rgba(255, 0, 0, .35)
+        }
 
-.container{
-max-width:1200px;
-margin:auto;
-background:#0b0b0b;
-padding:30px;
-border-radius:18px;
-box-shadow:0 0 30px rgba(255,0,0,.35)
-}
+        .header { text-align: center; margin-bottom: 20px }
+        .header img { max-width: 220px }
+        h1 { color: #e11d48; margin-top: 10px }
 
-.header{text-align:center;margin-bottom:20px}
+        .inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 20px
+        }
 
-.header img{max-width:220px}
+        label { font-size: 13px; color: #cbd5e1 }
 
-h1{color:#e11d48;margin-top:10px}
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            font-size: 18px;
+            margin-top: 6px
+        }
 
-.inputs{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:16px;
-margin-top:20px
-}
+        button {
+            background: #e11d48;
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            cursor: pointer
+        }
 
-label{font-size:13px;color:#cbd5e1}
+        button:hover { background: #be123c }
 
-input{
-width:100%;
-padding:14px;
-border-radius:10px;
-border:none;
-font-size:18px;
-margin-top:6px
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px
+        }
 
-button{
-background:#e11d48;
-color:#fff;
-border:none;
-padding:14px;
-border-radius:12px;
-font-size:15px;
-cursor:pointer
-}
+        th, td {
+            padding: 14px;
+            text-align: center;
+            border-bottom: 1px solid #27272a;
+            font-size: 16px
+        }
 
-button:hover{background:#be123c}
+        th { background: #111827; color: #e11d48 }
+        .hidden { display: none }
 
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:30px
-}
-
-th,td{
-padding:14px;
-text-align:center;
-border-bottom:1px solid #27272a;
-font-size:16px
-}
-
-th{background:#111827;color:#e11d48}
-
-.hidden{display:none}
-
-.actions{
-display:flex;
-gap:10px;
-margin-top:20px;
-flex-wrap:wrap
-}
-
-</style>
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<div class="header">
-<img src="logo.png" alt="Sagaz Motors">
-<h1>Simulador de Parcelamento</h1>
-</div>
-
-<div class="inputs">
-
-<div>
-<label>Nome do Cliente</label>
-<input type="text" id="cliente">
-</div>
-
-<div>
-<label>WhatsApp do Cliente</label>
-<input type="tel" id="whats">
-</div>
-
-<div>
-<label>Valor do Produto (R$)</label>
-<input type="number" id="valor" value="9590">
-</div>
-
-<div id="freteBox" class="hidden">
-<label>Frete</label>
-<input type="number" id="frete" value="0">
-</div>
-
-</div>
-
-<button onclick="liberarVendedor()" style="position:fixed;bottom:10px;right:10px;background:#111;color:#222;font-size:12px;padding:8px;border-radius:8px">
-área
-</button>
-
-<div class="actions hidden" id="modoBox">
-
-<button onclick="modo='loja';calcular()">🏪 Sem juros</button>
-
-<button onclick="modo='cliente';calcular()">👤 Com juros</button>
-
-<button onclick="enviarWhatsApp()">📲 Enviar no WhatsApp</button>
-
-<button style="margin-left:auto;padding:10px 14px;font-size:13px" onclick="window.print()">📄 Gerar PDF</button>
-
-</div>
-
-<table>
-
-<thead>
-<tr>
-<th>Parcelas</th>
-<th>Valor</th>
-<th>Parcelas</th>
-<th>Valor</th>
-<th class="hidden" id="colLiquido">Recebido Loja</th>
-</tr>
-</thead>
-
-<tbody id="tabela"></tbody>
-
-</table>
-
-<div class="print-footer">
-Sagaz Motors • WhatsApp (21) 97287-1998
-</div>
-
-</div>
-
-<script>
-
-let modo='loja'
-let cache={}
-
-const valorInput=document.getElementById('valor')
-const freteInput=document.getElementById('frete')
-const whatsInput=document.getElementById('whats')
-const clienteInput=document.getElementById('cliente')
-const tabela=document.getElementById('tabela')
-
-function calcular(){
-
-const valor=Number(valorInput.value)||0
-const frete=freteInput?Number(freteInput.value)||0:0
-
-tabela.innerHTML=''
-cache={}
-
-let resultados=[]
-
-for(let p=1;p<=24;p++){
-
-const total=valor+frete
-
-let parcela=0
-let recebido=0
-
-if(modo==='cliente'){
-
-const jurosTotal=0.04+(0.01*(p-1))
-
-const totalComJuros=valor*(1+jurosTotal)
-
-parcela=(totalComJuros+frete)/p
-
-recebido=total
-
-}else{
-
-parcela=total/p
-recebido=total
-
-}
-
-resultados.push({
-p,
-parcela,
-recebido
-})
-
-cache[p]={parcela,recebido}
-
-}
-
-for(let i=0;i<12;i++){
-
-const a=resultados[i]
-const b=resultados[i+12]
-
-const tr=document.createElement('tr')
-
-tr.innerHTML=`
-
-<td>${a.p}x</td>
-<td>${a.parcela.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</td>
-
-<td>${b.p}x</td>
-<td>${b.parcela.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</td>
-
-<td class="hidden liquido">
-${a.recebido.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
-</td>
-
-`
-
-tabela.appendChild(tr)
-
-}
-
-}
-
-function enviarWhatsApp(){
-
-const nome=clienteInput.value||'Cliente'
-let numero=whatsInput.value.replace(/\D/g,'')
-
-if(!numero)return alert('Informe o WhatsApp')
-
-if(!numero.startsWith('55'))numero='55'+numero
-
-let mensagem=`Olá ${nome}! 😊
-
-Segue simulação Sagaz Motors:
-
-`
-
-Object.keys(cache).forEach(p=>{
-mensagem+=`${p}x de ${cache[p].parcela.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}\n`
-})
-
-mensagem+=`\nQualquer dúvida estou à disposição ⚡🏍️`
-
-const url=`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`
-
-window.open(url)
-
-}
-
-function liberarVendedor(){
-
-if(prompt('Senha do vendedor:')==='sagaz123'){
-
-document.getElementById('freteBox').classList.remove('hidden')
-document.getElementById('modoBox').classList.remove('hidden')
-document.getElementById('colLiquido').classList.remove('hidden')
-
-document.querySelectorAll('.liquido').forEach(e=>e.classList.remove('hidden'))
-
-}
-
-}
-
-[valorInput,freteInput].forEach(el=>el&&el.addEventListener('input',calcular))
-
-calcular()
-
-</script>
+    <div class="container">
+
+        <div class="header">
+            <img src="logo.png" alt="Sagaz Motors">
+            <h1>Simulador de Parcelamento</h1>
+        </div>
+
+        <div class="inputs">
+            <div>
+                <label>Nome do Cliente</label>
+                <input type="text" id="cliente">
+            </div>
+            <div>
+                <label>WhatsApp do Cliente</label>
+                <input type="tel" id="whats">
+            </div>
+            <div>
+                <label>Valor do Produto (R$)</label>
+                <input type="number" id="valor" value="9590">
+            </div>
+            <div id="freteBox" class="hidden">
+                <label>Frete</label>
+                <input type="number" id="frete" value="0">
+            </div>
+        </div>
+
+        <button onclick="liberarVendedor()" style="position:fixed;bottom:10px;right:10px;background:#111;color:#222;font-size:12px;padding:8px;border-radius:8px">
+            área
+        </button>
+
+        <div class="actions hidden" id="modoBox">
+            <button onclick="modo='loja';calcular()">🏪 Sem juros (Até 18x)</button>
+            <button onclick="modo='cliente';calcular()">👤 Com juros (Até 24x)</button>
+            <button onclick="enviarWhatsApp()">📲 Enviar no WhatsApp</button>
+            <button style="margin-left:auto;padding:10px 14px;font-size:13px" onclick="window.print()">📄 Gerar PDF</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Parcelas</th>
+                    <th>Valor</th>
+                    <th>Parcelas</th>
+                    <th>Valor</th>
+                    <th class="hidden" id="colLiquido">Recebido Loja</th>
+                </tr>
+            </thead>
+            <tbody id="tabela"></tbody>
+        </table>
+
+        <div class="print-footer">
+            Sagaz Motors • WhatsApp (21) 97287-1998
+        </div>
+
+    </div>
+
+    <script>
+        let modo = 'loja'
+        let cache = {}
+
+        const valorInput = document.getElementById('valor')
+        const freteInput = document.getElementById('frete')
+        const whatsInput = document.getElementById('whats')
+        const clienteInput = document.getElementById('cliente')
+        const tabela = document.getElementById('tabela')
+
+        function calcular() {
+            const valor = Number(valorInput.value) || 0
+            const frete = freteInput ? Number(freteInput.value) || 0 : 0
+            const totalBase = valor + frete
+
+            tabela.innerHTML = ''
+            cache = {}
+            let resultados = []
+
+            // Limite de parcelas: 18 para Sem Juros, 24 para Com Juros
+            const maxParcelas = modo === 'loja' ? 18 : 24
+
+            for (let p = 1; p <= 24; p++) {
+                let parcela = 0
+                let recebido = totalBase
+
+                if (p <= maxParcelas) {
+                    if (modo === 'cliente') {
+                        const jurosTotal = 0.04 + (0.01 * (p - 1))
+                        const totalComJuros = valor * (1 + jurosTotal)
+                        parcela = (totalComJuros + frete) / p
+                    } else {
+                        parcela = totalBase / p
+                    }
+                    cache[p] = { parcela, recebido }
+                }
+
+                resultados.push({
+                    p,
+                    parcela: cache[p] ? cache[p].parcela : 0,
+                    recebido: cache[p] ? cache[p].recebido : 0
+                })
+            }
+
+            for (let i = 0; i < 12; i++) {
+                const a = resultados[i]
+                const b = resultados[i + 12]
+
+                const tr = document.createElement('tr')
+                
+                // Formatação visual: se não houver parcela (ex: 19x no sem juros), mostra vazio
+                const labelA = a.parcela > 0 ? `${a.p}x` : '-'
+                const valorA = a.parcela > 0 ? a.parcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'
+                const labelB = b.parcela > 0 ? `${b.p}x` : '-'
+                const valorB = b.parcela > 0 ? b.parcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'
+
+                tr.innerHTML = `
+                    <td>${labelA}</td>
+                    <td>${valorA}</td>
+                    <td>${labelB}</td>
+                    <td>${valorB}</td>
+                    <td class="hidden liquido">
+                        ${a.recebido > 0 ? a.recebido.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-'}
+                    </td>
+                `
+                tabela.appendChild(tr)
+            }
+        }
+
+        function enviarWhatsApp() {
+            const nome = clienteInput.value || 'Cliente'
+            let numero = whatsInput.value.replace(/\D/g, '')
+
+            if (!numero) return alert('Informe o WhatsApp')
+            if (!numero.startsWith('55')) numero = '55' + numero
+
+            let mensagem = `Olá ${nome}! 😊\n\nSegue simulação Sagaz Motors:\n\n`
+
+            Object.keys(cache).forEach(p => {
+                mensagem += `${p}x de ${cache[p].parcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}\n`
+            })
+
+            mensagem += `\n---\n\n`
+            mensagem += `*Olá! É um prazer ter você conosco!* 🚀\n\n`
+            mensagem += `Gostaria de agradecer imensamente pela sua visita à *Sagaz Motors*. Ficamos muito felizes em apresentar nossas soluções em mobilidade elétrica e inovação para você.\n\n`
+            mensagem += `Para que você possa conferir todos os nossos modelos, cores e especificações técnicas com calma, preparei o nosso *Portfólio Digital Interativo*.\n\n`
+            mensagem += `Pode acessar pelo link abaixo:\n`
+            mensagem += `👉 https://inovabio.my.canva.site/tabela-motors\n\n`
+            mensagem += `> *Dica:* Basta clicar no link e *arrastar para o lado* para navegar por todo o catálogo.\n\n`
+            mensagem += `Se tiver qualquer dúvida sobre autonomia, financiamento ou quiser entender qual modelo melhor se adapta ao seu dia a dia, é só me chamar por aqui. Estamos à disposição!\n\n`
+            mensagem += `Abraços,\n\n`
+            mensagem += `*Equipe Sagaz Motors*`
+
+            const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`
+            window.open(url)
+        }
+
+        function liberarVendedor() {
+            if (prompt('Senha do vendedor:') === 'sagaz123') {
+                document.getElementById('freteBox').classList.remove('hidden')
+                document.getElementById('modoBox').classList.remove('hidden')
+                document.getElementById('colLiquido').classList.remove('hidden')
+                document.querySelectorAll('.liquido').forEach(e => e.classList.remove('hidden'))
+            }
+        }
+
+        [valorInput, freteInput].forEach(el => el && el.addEventListener('input', calcular))
+
+        calcular()
+    </script>
 
 </body>
 </html>
-```
